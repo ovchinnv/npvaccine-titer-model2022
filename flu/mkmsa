@@ -1,0 +1,3 @@
+#!/bin/bash
+matlab="matlab -nodesktop -nosplash"
+$matlab < mkmsa.m

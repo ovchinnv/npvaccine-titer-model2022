@@ -1,0 +1,3 @@
+#!/bin/bash
+matlab="matlab -nodesktop -nosplash"
+$matlab -r " nptype='admix'; xp=5 ; xint=1 ; maxiter=4000 ; sdstep=0.015 ; avedist ; model='avedist' ; showfit ; exit" > mkfigS2ab.out

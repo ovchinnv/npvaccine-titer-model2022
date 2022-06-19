@@ -1,0 +1,3 @@
+#!/bin/bash
+matlab="matlab -nodesktop -nosplash"
+$matlab -r "dist2ave ; showfit ; exit" > mkfig3ab.out

@@ -1,0 +1,3 @@
+#!/bin/bash
+matlab="matlab -nodesktop -nosplash"
+$matlab -r "qgrantham=0; dist2ave ; model='dist2ave' ; showfit ; exit" > mkfigS1ab.out

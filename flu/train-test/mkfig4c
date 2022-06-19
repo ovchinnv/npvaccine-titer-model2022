@@ -1,0 +1,4 @@
+#!/bin/bash
+matlab="matlab -nodesktop -nosplash"
+# average distance
+$matlab <<< "xint=1; xp=3; model='avedist' ; Diff=0.49 ;  allvacs ; show ; exit " >& mkfig4c.out 
