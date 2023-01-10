@@ -1,5 +1,7 @@
 % in this version, using not distance to average strain, but average strain distance
 %
+model='avedist';
+%
 if (~exist('tag'))
  tag='headstem';
 end
@@ -57,11 +59,11 @@ if qnorm == 1
 % scale :
  scale=0;
  iscale=0;
- for i=1:length(train) % train strains
-  for j=1:nvac % all vaccines, for now
-   scale = scale + iggemat( itrain(i), j ) ;
+ for itrain=1:size(itrainsample,1) % train samples
+   ia=itrainsample(itrain,1); % antigen index
+   iv=itrainsample(itrain,2); % vaccine index
+   scale = scale + iggemat( ia, iv ) ;
    iscale = iscale + 1 ;
-  end
  end
  enmat = iggemat / scale * iscale ;
 else
@@ -90,35 +92,38 @@ wgt2=wgt.^2; % squared weights
 % wcoor=repmat(wgts,nstrain,1).*coor ;
 ind=0;
 dwgt(:)=0;
-for i=1:length(train) % all train strains
- for j=1:nvac % all vaccines
+
+for itrain=1:size(itrainsample,1) % train samples
+  ia=itrainsample(itrain,1); % antigen index
+  iv=itrainsample(itrain,2); % vaccine index
+%
   dave=0 ;% init average distance
   dwgt_this(:)=0;
-  for k=vaccines{j}
+  for k=vaccines{iv}
 
-%   dcoor=reshape(coor(k,:)-coor(itrain(i),:), ndim, []);
+%   dcoor=reshape(coor(k,:)-coor(ia,:), ndim, []);
 %   ndcoor2=sum(dcoor.^2,1); % squared norm of dcoor
 
-   d = sqrt( sum( wgt2 .* ndcoor2(:,k,itrain(i))' ) );  % distance to this strain
+   d = sqrt( sum( wgt2 .* ndcoor2(:,k,ia)' ) );  % distance to this strain
 
    dave = dave + d ;
 
 % contribution to gradient of error wrt weight
 % to omit points for which d2=0; (depending on model could be singular or very large)
    if (d>0)
-    dwgt_this = dwgt_this +  wgt .* ndcoor2(:,k,itrain(i))' / d ;
+    dwgt_this = dwgt_this +  wgt .* ndcoor2(:,k,ia)' / d ;
    end
   end % all strains in the vaccine
 
-  nstr=numel(vaccines{j}); % normalization
+  nstr=numel(vaccines{iv}); % normalization
 
   dave = dave / nstr ; % mean squared distance between the train strain and all vaccine strains
 % compute model value :
   ind=ind+1;
   iggmod(ind) = 1./(xint+dave^xp);  % model igg signal
 
-  iggexp1(ind) = iggmat(itrain(i),j) ;
-  oenorm(ind) = oenmat(itrain(i),j) ;
+  iggexp1(ind) = iggmat(ia,iv) ;
+  oenorm(ind) = oenmat(ia,iv) ;
 
   err(ind) = ( iggmod(ind) - iggexp1(ind) ) * oenorm(ind) ; % model error
 
@@ -128,7 +133,6 @@ for i=1:length(train) % all train strains
   if (dave>0)
    dwgt = dwgt + 2 * err(ind) * (-iggmod(ind)^2)*xp*dave^(xp-1) * dwgt_this ; % add contribution from ths train strain
   end
- end
 end
 
 ibeg=1; % start at this row

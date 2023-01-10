@@ -62,9 +62,12 @@ if qnorm == 1
 % scale :
  scale=0;
  iscale=0;
- for i=1:length(train) % train strains
+ for itrain=1:size(itrainsample,1) % train samples
+  ia=itrainsample(itrain,1); % antigen index
+  iv=itrainsample(itrain,2); % vaccine index
+%
   for j=1:nvac % all vaccines, for now
-   scale = scale + iggemat( itrain(i), j ) ;
+   scale = scale + iggemat( ia, iv ) ;
    iscale = iscale + 1 ;
   end
  end
@@ -80,11 +83,13 @@ while 1 %do
 wgt2=wgt.^2; % squared weights
 ind=0; % vaccine index; needs to match the order of vaccines in the experimental dataset of Cohen21 PLoS
 dwgt(:)=0;
-for i=1:length(train) % all train strains
- for j=1:nvac % all vaccines
-  ind=ind+1;
 
-  dcoor=reshape(vcoor(j,:)-coor(itrain(i),:), ndim, []);
+for itrain=1:size(itrainsample,1) % this is a marix with two columns, ag index in first column, vaccine index in second
+  ia=itrainsample(itrain,1); % antigen
+  iv=itrainsample(itrain,2); % vaccine
+  ind=ind+1;
+%
+  dcoor=reshape(vcoor(iv,:)-coor(ia,:), ndim, []);
   ndcoor2=sum(dcoor.^2,1); % squared norm of dcoor
 
   d2 = sum( wgt2 .* ndcoor2 );  % squared distance
@@ -95,8 +100,8 @@ for i=1:length(train) % all train strains
    iggmod(ind) = 1./(xint+d2)^xp;  % model igg signal
   end
 
-  iggexp1(ind) = iggmat(itrain(i),j) ;
-  oenorm(ind) = oenmat(itrain(i),j) ;
+  iggexp1(ind) = iggmat(ia,iv) ;
+  oenorm(ind) = oenmat(ia,iv) ;
 
   err(ind) = ( iggmod(ind) - iggexp1(ind) ) * oenorm(ind) ; % model error
 
@@ -113,7 +118,6 @@ for i=1:length(train) % all train strains
    end
   end
 %return
- end
 end
 
 ibeg=1; % start at this row
