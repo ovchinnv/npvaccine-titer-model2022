@@ -1,9 +1,24 @@
 % plot correlation coefficients for all models
 if exist('OCTAVE_VERSION')
  graphics_toolkit('gnuplot') ;
+ qoct=1;
+else
+ qoct=0;
+end
+%
+if (~exist('model'))
+ model='dist2ave' ; % name of matlab script file that performs the fit
+end
+%
+if (~exist('enc'))
+ enc='gr' ; % name of matlab script file that performs the fit
 end
 %
 fn=[model,'-',enc] ;
+% plot correlation coefficients for all models over vaccine splits, i.e. 4 choose 2 = 6 models :
+if ~exist('qvacsplit') ; qvacsplit=0 ; end
+if qvacsplit ; fn=[fn,'-vac']; else ; fn=[fn,'-ags']; end
+
 load([fn,'.mat']);
 %
 %%% compute average correlation coefficient & average error using nrep samples
@@ -77,7 +92,8 @@ for i=1:vind
 end
 
 if (1)
-figure(1) ; hold on ;
+f=figure(1) ; hold on ;
+set(f,'position',[ 200, 100, 700, 525 ]) ;
 set(gca, 'fontsize', 14)
 st='k.';
 st='ro';
@@ -85,7 +101,11 @@ st='ro';
 %st='gv';
 
 %errorbar(allca(okinds), allcta(okinds), allcte(okinds),st)
-scatter(allca(okinds), allcta(okinds),st)
+if qoct
+ scatter(allca(okinds), allcta(okinds),st(1),st(2))
+else
+ scatter(allca(okinds), allcta(okinds),st)
+end
 xlabel('\it c_P^{train}')
 ylabel('\it c_P^{test}')
 xlim([0 1])
@@ -110,7 +130,11 @@ set(gcf, 'paperpositionmode','auto')
 if (1) % spearman
  st='gv';
 % errorbar(allcsa(okinds), allcsta(okinds), allcste(okinds),st)
- scatter(allcsa(okinds), allcsta(okinds),st)
+ if qoct
+  scatter(allcsa(okinds), allcsta(okinds),st(1),st(2))
+ else
+  scatter(allcsa(okinds), allcsta(okinds),st)
+ end
  xlabel('\it c_{P,S}^{train}')
  ylabel('\it c_{P,S}^{test}')
  xlim([0 1])

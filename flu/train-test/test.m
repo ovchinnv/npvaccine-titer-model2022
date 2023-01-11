@@ -24,25 +24,32 @@ lims=[-0.25 1.75];
 lims=[-0.25 1.25];
 
 cols=[ 255 92 103 ; 0 255 0 ; 255 165 0 ; 0 0 250 ]/255;
+% create test sample :
+% take all those not present in fitting set
+iall_mat=ones(nallags,numel(vacs));
+itrainsample_mat=sparse(itrainsample(:,1), itrainsample(:,2), 1, nallags, numel(vacs));
+itestsample_mat=iall_mat-itrainsample_mat ;
+[ias,ivs]=find(itestsample_mat);
+itestsample=[ias,ivs];
 %
-check=allstrains ;
-% take those not present in fitting set
-check=setdiff(allstrains, train);
 %
-icheck=getind(check);
-ncheck=length(check);
+if (isempty(itestsample))
+ itestsample=itrainsample ; % use all test strains
+end
+agtest=unique(itestsample(:,1)) ;
+vactest=unique(itestsample(:,2)) ;
 %
-cols=repmat(cols, ncheck, 1);
+cols=repmat(cols, numel(agtest), 1);
 
 if qnorm == 1
 % scale : 
  scale=0;
  iscale=0;
- for i=1:length(check) % test strains
-  for j=1:nvac % all vaccines, for now
-   scale = scale + iggemat( icheck(i), j ) ;
-   iscale = iscale + 1 ;
-  end
+ for itest=1:size(itestsample,1) % test strains
+  ia=itestsample(itest,1); % antigen
+  iv=itestsample(itest,2); % vaccine
+  scale = scale + iggemat( ia, iv ) ;
+  iscale = iscale + 1 ;
  end
  enmat = iggemat / scale * iscale ;
 else
@@ -54,11 +61,12 @@ clear iggexp1 iggexpe1 iggmod
 wgt2=bestwgt.^2; % squared weights
 %
 ind=0;
-for i=1:length(check) % all test strains
- for j=1:nvac % all vaccines
+for itest=1:size(itestsample,1) % this is a marix with two columns, ag index in first column, vaccine index in second
+  ia=itestsample(itest,1); % antigen
+  iv=itestsample(itest,2); % vaccine
 %
   if (strcmp(model,'dist2ave')) % distance to average model
-   dcoor=reshape(vcoor(j,:)-coor(icheck(i),:), ndim, []);
+   dcoor=reshape(vcoor(iv,:)-coor(ia,:), ndim, []);
    ndcoor2=sum(dcoor.^2,1); % squared norm of dcoor
 %
    d2 = sum( wgt2 .* ndcoor2 );  % squared distance
@@ -74,15 +82,15 @@ for i=1:length(check) % all test strains
   elseif (strcmp(model, 'avedist')) % average distance model
 %
    dave=0 ;% average distance
-   for k=vaccines{j}
+   for k=vaccines{iv}
 
-    dcoor=reshape(coor(k,:)-coor(icheck(i),:), ndim, []);
+    dcoor=reshape(coor(k,:)-coor(ia,:), ndim, []);
     ndcoor2=sum(dcoor.^2,1); % squared norm of dcoor
 
     d = sqrt( sum( wgt2 .* ndcoor2 ) );  % distance to this strain
     dave = dave + d ;
    end % for k in vaccine
-   nstr=numel(vaccines{j}); % normalization
+   nstr=numel(vaccines{iv}); % normalization
    dave = dave / nstr ; % mean squared distance between the train strain and all vaccine strains
 %
    ind=ind+1;
@@ -90,11 +98,10 @@ for i=1:length(check) % all test strains
    iggmod(ind) = 1./(xint+dave^xp);  % model igg signal
   end % if
 %
-  iggexp1(ind) = iggmat(icheck(i),j) ;
-  iggexpe1(ind) = iggemat(icheck(i),j) ;
-  oenorm(ind) = oenmat(icheck(i),j) ;
+  iggexp1(ind) = iggmat(ia,iv) ;
+  iggexpe1(ind) = iggemat(ia,iv) ;
+  oenorm(ind) = oenmat(ia,iv) ;
   err(ind) = ( iggmod(ind) - iggexp1(ind) ) * oenorm(ind) ; % model error
- end
 end
 
 ibeg=1; % start at this row

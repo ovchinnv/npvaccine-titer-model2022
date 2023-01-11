@@ -37,7 +37,7 @@ cols=[ 255 92 103 ; 0 255 0 ; 255 165 0 ; 0 0 250 ]/255;
 % create test sample :
 % take all those not present in fitting set
 iall_mat=ones(nallags,numel(vacs));
-itrainsample_mat=sparse(itrainsample(:,1), itrainsample(:,2), 1);
+itrainsample_mat=sparse(itrainsample(:,1), itrainsample(:,2), 1, nallags, numel(vacs));
 itestsample_mat=iall_mat-itrainsample_mat ;
 [ias,ivs]=find(itestsample_mat);
 itestsample=[ias,ivs];
