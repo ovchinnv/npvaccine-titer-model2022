@@ -37,11 +37,10 @@ iagtrain=getind(agtrain)
 %
 % and/or can select certain vaccines for a train/test split :
 vacs = { 'm1', 'm2', 'm4', 'm8' } ; % available vaccines
-jm1=1 ; jm2=2 ; jm4=3 ; jm8=4 ; % vaccien indices
-
+jm1=1 ; jm2=2 ; jm4=3 ; jm8=4 ; % vaccine indices
+%
 vactrain=vacs; % take all vaccines for training ( but possibly a subset of ags, as above)
 for iv=1:numel(vactrain)
-% ivactrain(iv)=find(ismember(vacs,vactrain(iv)))];
  ivactrain(iv)=find(ismember(vacs,vactrain(iv)));
 end
 % or, could specify directly the vaccine indices in ivactrain

@@ -65,11 +65,8 @@ if qnorm == 1
  for itrain=1:size(itrainsample,1) % train samples
   ia=itrainsample(itrain,1); % antigen index
   iv=itrainsample(itrain,2); % vaccine index
-%
-  for j=1:nvac % all vaccines, for now
-   scale = scale + iggemat( ia, iv ) ;
-   iscale = iscale + 1 ;
-  end
+  scale = scale + iggemat( ia, iv ) ;
+  iscale = iscale + 1 ;
  end
  enmat = iggemat / scale * iscale ;
 else
