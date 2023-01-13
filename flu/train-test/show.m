@@ -93,7 +93,8 @@ end
 
 if (1)
 f=figure(1) ; hold on ;
-set(f,'position',[ 200, 100, 700, 525 ]) ;
+%set(f,'position',[ 200, 100, 700, 525 ]) ;
+set(f,'position',[ 200, 100, 750, 550 ]) ;
 set(gca, 'fontsize', 14)
 st='k.';
 st='ro';

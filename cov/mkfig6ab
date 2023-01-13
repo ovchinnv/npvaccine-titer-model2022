@@ -1,3 +1,4 @@
 #!/bin/bash
-matlab="matlab -nodesktop -nosplash"
+#matlab="matlab -nodesktop -nosplash"
+matlab="octave"
 $matlab -r "avedist ; model='avedist' ; showfit ; exit" > mkfig5ab.out

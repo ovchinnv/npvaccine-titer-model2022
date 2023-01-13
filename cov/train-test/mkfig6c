@@ -1,4 +1,5 @@
 #!/bin/bash
 matlab="matlab -nodesktop -nosplash"
 # average distance
-$matlab <<< "xint=0.8; xp=3.8; model='avedist' ; Diff=0.3 ;  allvacs ; show ;  exit " >& mkfig6c.out
+$matlab <<< "xint=0.8; xp=3.8; model='avedist' ; Diff=0.3 ; allagsplit ; show ; trains={'sars-2'}; show ; exit " >& mkfig6c.out
+#$matlab <<< "xint=0.8; xp=3.8; model='avedist' ; Diff=0.3 ; allvacsplit ; qvacsplit=1; show ; exit " >& mkfig6c-rev.out

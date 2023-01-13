@@ -30,7 +30,7 @@ cols=[ 255 92 103 ; 0 255 0 ; 255 165 0 ; 0 0 250 ]/255;
 % create test sample :
 % take all those not present in fitting set
 % note that some AGs are "not allowed" because there is no titer data against them, even though they are part of the vaccine
-% for this reason, the simple def below (from flu) does not work (i.e. some ones shoule be zero) ; in the flu data, we have titers to each strain in the vacc.
+% for this reason, the simple def below (from flu) does not work (i.e. some 1's are zero) ; in the flu data, we have titers to each strain in the vacc.
 %iall_mat=ones(nallags,numel(vacs));
 % slightly more complicated :
 iallags=getind(allags); maxiag=max(iallags);

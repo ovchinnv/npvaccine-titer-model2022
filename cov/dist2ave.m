@@ -44,7 +44,7 @@ vcoor(j4b,:)=mean(coor(im4b,:),1);
 vcoor(j8ab,:)=mean(coor(im8,:),1);
 
 maxiter=3000 ; % iterations :
-sdstep=0.039 ; % steepest descent step coefficient
+sdstep=0.04 ; % steepest descent step coefficient
 %
 iter=1;
 besq=inf;
