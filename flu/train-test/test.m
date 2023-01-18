@@ -91,7 +91,7 @@ for itest=1:size(itestsample,1) % this is a marix with two columns, ag index in 
     dave = dave + d ;
    end % for k in vaccine
    nstr=numel(vaccines{iv}); % normalization
-   dave = dave / nstr ; % mean squared distance between the train strain and all vaccine strains
+   dave = dave / nstr; % mean squared distance between the train strain and all vaccine strains
 %
    ind=ind+1;
 % model value :
@@ -102,15 +102,19 @@ for itest=1:size(itestsample,1) % this is a marix with two columns, ag index in 
   iggexpe1(ind) = iggemat(ia,iv) ;
   oenorm(ind) = oenmat(ia,iv) ;
   err(ind) = ( iggmod(ind) - iggexp1(ind) ) * oenorm(ind) ; % model error
+% also save testsample matrix, with results added :
+  itestsample(itest,3)=iggmod(ind) ;
+  itestsample(itest,4)=iggexp1(ind) ;
 end
 
 ibeg=1; % start at this row
 iggmodt=iggmod ;
-c=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)')
 if exist('OCTAVE_VERSION')
+ c=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)')
  cs=spearman(iggmodt(ibeg:end)', iggexp1(ibeg:end)')
 else % matlab
- cs=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)', 'type', 'spearman')
+ [c,pval]=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)')
+ [cs,spval]=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)', 'type', 'spearman')
 end
 err2=(iggmodt(:) - iggexp1(:)).^2;
 e2=sum(err2(ibeg:end))

@@ -1,0 +1,8 @@
+#!/bin/bash
+./mkfig3c
+./mkfig4c
+#exit
+./mkfigS1c
+./mkfigS2c
+./mkfigS3c
+

@@ -20,12 +20,16 @@ end
 if (~exist('model'))
  model='dist2ave' ; % name of matlab script file that performs the fit
 end
+if (~exist('nptype'))
+ nptype='mosaic';
+end
 
 tag='headstem';
 %
 qwrand=0 ; % constant initial weights
 nrep=1 ; % if the weights are constant, there is no randomness so use only one replica
 %
+return
 %
 clear indvac indags vinds;
 % select all possible 5-strain combinations from available strains (nalltest) ; note that order does not matter (cocktail)
@@ -46,29 +50,37 @@ for i1=1 : nallvacs
    alle2a=e2a ;
    allc=c ; % pearson correlation
    allcs=cs ; % spearman correlation
+   allcpval=pval ;% p-value associated w/correlation coefficient
+   allcspval=spval ;
   else
    allwgt=[allwgt;bestwgt] ; % append this sample
    alle2a=[alle2a;e2a];
    allc=[allc;c];
    allcs=[allcs;cs];
+   allcpval=[allcpval pval] ;% p-value associated w/correlation coefficient
+   allcspval=[allcspval spval] ;
   end
   run test; % test
   if (isamp==1) % set 1st sample
    alle2at=e2a ;
    allct=c ;
    allcst=cs ;
+   allctpval=pval ;% p-value associated w/correlation coefficient
+   allcstpval=spval ;
   else
    alle2at=[alle2at;e2a]; % append next sample
    allct=[allct;c];
    allcst=[allcst;cs];
+   allctpval=[allctpval pval] ;% p-value associated w/correlation coefficient
+   allcstpval=[allcstpval spval] ;
   end
-
+  alltestdata(isamp,:,:) = itestsample ; % save test sample & results as well
  end % run model nrep times
 %  return
  end
 end
 
 %
-%savename=[model,'-',date,'-',enc,'.mat'];
-savename=[model,'-',enc,'-vac.mat'];
+savename=[model,'-',enc,'-',nptype,'-vac.mat'];
 save(savename, '-mat')
+%

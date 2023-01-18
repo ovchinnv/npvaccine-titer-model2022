@@ -1,0 +1,12 @@
+#!/bin/bash
+matlab="matlab -nodesktop -nosplash"
+# model training/testing with a `holdout' vaccine set:
+# test on "validation" sample :
+#$matlab <<< "xint=1; xp=2; model='dist2ave' ; Diff=0.49 ; nptype='mosaic'; iholdvacs=4 ; qtestholdvac=0 ; allagsplit ; lbl='\itA'; showfit ; exit " >& mkvac1tr.out
+# test on "holdout" sample :
+$matlab <<< "xint=1; xp=2; model='dist2ave' ; Diff=0.49 ; nptype='mosaic'; iholdvacs=4 ; qtestholdvac=1 ; allagsplit ; lbl='\itA'; showfit ; exit " >& mkvac1.out
+#exit
+$matlab <<< "xint=1; xp=3; model='avedist'  ; Diff=0.49 ; nptype='mosaic'; iholdvacs=4 ; qtestholdvac=1 ; allagsplit ; lbl='\itB'; showfit ; exit " >& mkvac2.out
+$matlab <<< "xint=1; xp=2; model='dist2ave' ; qgrantham=0; enc='at' ; Diff=0.49 ; nptype='mosaic'; iholdvacs=4 ; qtestholdvac=1 ; allagsplit ; lbl='\itC' ; showfit ; exit " >& mkvac3.out
+$matlab <<< "xint=1; xp=5; model='avedist'  ; maxiter=4000 ; sdstep=0.015 ; nptype='admix'; iholdvacs=4 ; qtestholdvac=1; allagsplit ; lbl='\itD' ; showfit ; exit " >& mkvac4.out
+$matlab <<< "xint=1; xp=3; model='dist2ave' ; Diff=0.45 ; maxiter=4000 ; sdstep=0.015 ; nptype='admix'; iholdvacs=4; qtestholdvac=1; allagsplit ;lbl='\itE' ; showfit ; exit" >& mkvac5.out

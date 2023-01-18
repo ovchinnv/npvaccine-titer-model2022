@@ -1,0 +1,5 @@
+#!/bin/bash
+matlab="matlab -nodesktop -nosplash"
+#
+$matlab <<< "xint=1; xp=2.5; model='dist2ave' ; Diff=0.3 ; iholdvacs=4 ; qtestholdvac=1 ; allagsplit ; lbl='\itA'; showfit ; exit " >& mkvac1.out
+$matlab <<< "xint=0.8; xp=3.8; model='avedist'; Diff=0.3 ; iholdvacs=4 ; qtestholdvac=1 ; allagsplit ; lbl='\itB' ; showfit ; exit " >& mkvac2.out

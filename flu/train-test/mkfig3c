@@ -1,6 +1,5 @@
 #!/bin/bash
 matlab="matlab -nodesktop -nosplash"
-matlab="octave"
 # distance to average
-#$matlab <<< "xint=1; xp=2; model='dist2ave' ; Diff=0.49 ;  allagsplit ; show ;  exit " >& mkfig3c.out
-$matlab <<< "xint=1; xp=2; model='dist2ave' ; Diff=0.49 ;  allvacsplit ; qvacsplit=1 ; show ;  exit " #>& mkfig3c-vac.out
+$matlab <<< "xint=1; xp=2; model='dist2ave' ; Diff=0.49 ;  allagsplit ; show ;  exit " >& mkfig3c.out
+$matlab <<< "xint=1; xp=2; model='dist2ave' ; Diff=0.49 ;  allvacsplit ; qvacsplit=1 ; lbl='\itA'; show ;  exit " >& mkfig3c-vac.out

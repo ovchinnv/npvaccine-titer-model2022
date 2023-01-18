@@ -7,18 +7,24 @@ else
 end
 %
 if (~exist('model'))
- model='dist2ave' ; % name of matlab script file that performs the fit
+ model='avedist' ; % name of matlab script file that performs the fit
 end
 %
 if (~exist('enc'))
  enc='gr' ; % name of matlab script file that performs the fit
 end
 %
-fn=[model,'-',enc] ;
+%
+if (~exist('nptype'))
+ nptype='mosaic' ;
+end
+%
+fn=[model,'-',enc,'-',nptype] ;
 % plot correlation coefficients for all models over vaccine splits, i.e. 4 choose 2 = 6 models :
 if ~exist('qvacsplit') ; qvacsplit=0 ; end
 if qvacsplit ; fn=[fn,'-vac']; else ; fn=[fn,'-ags']; end
 
+fn
 load([fn,'.mat']);
 %
 %%% compute average correlation coefficient & average error using nrep samples
@@ -56,7 +62,40 @@ if (nrep==1)
  alle2ate=allce;
 end
 %
-% to include certain models
+% as a check, recompute any of the above from alltest data :
+assert(vind==size(alltestdata,1)) ;
+nag= max(max(alltestdata(:,:,1)));
+nvac=max(max(alltestdata(:,:,2)));
+testmat=sparse(nag, nvac);
+testmatexp=sparse(nag, nvac);
+itestmat=sparse(nag, nvac); % count matrix
+%
+for i=1:vind
+ allct2(i)=corr(alltestdata(i,:,3)', alltestdata(i,:,4)' ) ;
+% compute average prediction :
+ itestsample=squeeze(alltestdata(i,:,:)) ;
+ testmat = testmat + sparse(itestsample(:,1),itestsample(:,2),itestsample(:,3),nag,nvac);
+ testmatexp = testmatexp + sparse(itestsample(:,1),itestsample(:,2),itestsample(:,4),nag,nvac);
+ itestmat = itestmat + sparse(itestsample(:,1),itestsample(:,2),1,nag,nvac);
+end
+testmat=testmat./itestmat ; % average
+testmatexp=testmatexp./itestmat ; % average
+iok=~isnan(testmat); % valid inds
+%
+assert(norm(allct2(:)-allct(:))<1e-7) % stop if they do not match
+% compute mean prediction :
+if (qoct)
+ cta=corr(testmat(iok(:)),testmatexp(iok(:)))
+ csta=spearman(testmat(iok(:)),testmatexp(iok(:)))
+else
+ [cta,pval]=corr(full(testmat(iok(:))),full(testmatexp(iok(:))))
+% [cta,pval]=corr(testmat(iok(:)),testmatexp(iok(:)))
+ [csta,spval]=corr(full(testmat(iok(:))),full(testmatexp(iok(:))), 'type', 'spearman')
+% [csta,spval]=corr(testmat(iok(:)),testmatexp(iok(:)), 'type', 'spearman')
+end
+
+%
+% to include certain models in the scatter plot
 %
 qany=0 ; % otherwise qall ; means that any of the strains must be present (vs all)
 trains={}
@@ -113,13 +152,18 @@ xlim([0 1])
 ylim([0 1])
 
 % average corr coef
-cptrave=mean(allca(okinds))
-cptrerr=std(allca(okinds))
-
-cptave=mean(allcta(okinds))
-cpterr=std(allcta(okinds))
+cptrave=mean(allca(okinds));
+cptrerr=std(allca(okinds));
+%
+cptave=mean(allcta(okinds));
+cpterr=std(allcta(okinds));
+% pvalues :
+minctp=min(allctpval)
+maxctp=max(allctpval)
+avectp=mean(allctpval)
 
 %l=sprintf('C_P^t %4.2f +/- %5.3f', cptrave, cptrerr')
+%leg={['\it C_P^{train}=', num2str(cptrave,2), '+/-', num2str(cptrerr,2), '; \it C_P^{test}=', num2str(cptave,2), '+/-', num2str(cpterr,2), ';\it C_P^{test,ave}=',num2str(cta) ]};
 leg={['\it C_P^{train}=', num2str(cptrave,2), '+/-', num2str(cptrerr,2), '; \it C_P^{test}=', num2str(cptave,2), '+/-', num2str(cpterr,2) ]};
 legend(leg, 'location', 'northwest'); legend boxoff;
 
@@ -141,20 +185,29 @@ if (1) % spearman
  xlim([0 1])
  ylim([0 1])
 %
- cptrave=mean(allcsa(okinds))
- cptrerr=std(allcsa(okinds))
-
- cptave=mean(allcsta(okinds))
- cpterr=std(allcsta(okinds))
+ cptrave=mean(allcsa(okinds));
+ cptrerr=std(allcsa(okinds));
 %
+ cptave=mean(allcsta(okinds));
+ cpterr=std(allcsta(okinds));
+% pvalues :
+ mincstp=min(allcstpval)
+ maxcstp=max(allcstpval)
+ avecstp=mean(allcstpval)
+%
+% leg=[leg {['\it C_S^{train}=', num2str(cptrave,2), '+/-', num2str(cptrerr,2), ';\it C_S^{test}=', num2str(cptave,2), '+/-', num2str(cpterr,2), ';\it C_S^{test,ave}=',num2str(csta)]}];
  leg=[leg {['\it C_S^{train}=', num2str(cptrave,2), '+/-', num2str(cptrerr,2), '; \it C_S^{test}=', num2str(cptave,2), '+/-', num2str(cpterr,2) ]}];
  legend(leg, 'location', 'northwest'); legend boxoff;
+%
+ if exist('lbl')
+  text(-0.12,0.99,lbl,'fontsize',18);
+ end
 %
  box on ;
  set(gca, 'fontsize',14)
  set(gcf, 'paperpositionmode','auto')
- print(gcf, '-dpng', [fn,'-',nptype,'-cs.png']);
- print(gcf, '-depsc2', [fn,'-',nptype,'-cs.eps']);
+ print(gcf, '-dpng', [fn,'-cs.png']);
+ print(gcf, '-depsc2', [fn,'-cs.eps']);
 end
 
 %errorbar(alle2aa(okinds), alle2ata(okinds), alle2ae(okinds),'k.')

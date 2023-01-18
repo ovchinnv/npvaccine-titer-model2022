@@ -135,9 +135,11 @@ iggmod2t = iggmodb ; % take best model values
 
 c=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)')
 if exist('OCTAVE_VERSION')
+ c=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)')
  cs=spearman(iggmod2t(ibeg:end)', iggexp1(ibeg:end)')
 else % matlab
- cs=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)', 'type', 'spearman')
+ [c,pval]=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)') % Pearson correlation between exp and model
+ [cs,spval]=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)', 'type', 'spearman')
 end
 err2=(iggmod2t(:) - iggexp1(:)).^2;
 e2=sum(err2(ibeg:end))

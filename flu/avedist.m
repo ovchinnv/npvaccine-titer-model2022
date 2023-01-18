@@ -45,7 +45,6 @@ dwgt_this=zeros(1,nres) ;
 ndim=size(coor,2)/nres; % components per residue
 % compute average strain in all vaccine
 vaccines={ im1, im2, im4, im8 };
-nvac=numel(vaccines);
 
 % iterations :
 maxiter=3000 ;
@@ -159,11 +158,13 @@ if iter>maxiter;break;end;end;%until iter>maxiter
 iggmodt = iggmodb ; % output best model results
 %iggmodt = iggmod ; % output last model results
 %
-c=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)') % Pearson correlation between exp and model
 if exist('OCTAVE_VERSION')
+% for octave, need to compute pval manually using the correct chi2 statistic
+ c=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)') % Pearson correlation between exp and model
  cs=spearman(iggmodt(ibeg:end)', iggexp1(ibeg:end)') % Spearman correlation
 else % matlab
- cs=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)', 'type', 'spearman')
+ [c,pval]=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)') % Pearson correlation between exp and model
+ [cs,spval]=corr(iggmodt(ibeg:end)', iggexp1(ibeg:end)', 'type', 'spearman')
 end
 err2=(iggmodt(:) - iggexp1(:)).^2; % error for each titer
 e2=sum(err2(ibeg:end)) % total squared error
