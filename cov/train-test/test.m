@@ -108,16 +108,23 @@ for itest=1:size(itestsample,1) % this is a marix with two columns, ag index in 
   iggexpe1(ind) = iggemat(ia,iv) ;
   oenorm(ind) = oenmat(ia,iv) ;
   err(ind) = ( iggmod(ind) - iggexp1(ind) ) * oenorm(ind) ; % model error
+% also save testsample matrix, with results added :
+  itestsample(itest,3)=iggmod(ind) ;
+  itestsample(itest,4)=iggexp1(ind) ;
 end
 
 ibeg=1; % start at this row
 iggmod2t=iggmod ;
 c=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)')
+%
 if exist('OCTAVE_VERSION')
+ c=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)')
  cs=spearman(iggmod2t(ibeg:end)', iggexp1(ibeg:end)')
 else % matlab
- cs=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)', 'type', 'spearman')
+ [c,pval]=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)')
+ [cs,spval]=corr(iggmod2t(ibeg:end)', iggexp1(ibeg:end)', 'type', 'spearman')
 end
+
 err2=(iggmod2t(:) - iggexp1(:)).^2;
 e2=sum(err2(ibeg:end))
 e2a=mean(err2(ibeg:end)) % mean squared error

@@ -72,39 +72,34 @@ if (nrep==1)
  alle2ate=allce;
 end
 %
-% as a check, recompute any of the above from allerr :
-nagtest=size(itestsample,1) ;
+% as a check, recompute any of the above from alltest data :
+assert(vind==size(alltestdata,1)) ;
+nag= max(max(alltestdata(:,:,1)));
+nvac=max(max(alltestdata(:,:,2)));
+testmat=sparse(nag, nvac);
+testmatexp=sparse(nag, nvac);
+itestmat=sparse(nag, nvac); % count matrix
+%
 for i=1:vind
- alliggmod(i,1:nagtest) = allerrt(i,1:nagtest) ./ oenorm(1:nagtest) + iggexp1(1:nagtest);
- allct2(i)=corr(alliggmod(i,1:nagtest)', iggexp1(:));
+ allct2(i)=corr(alltestdata(i,:,3)', alltestdata(i,:,4)' ) ;
+% compute average prediction :
+ itestsample=squeeze(alltestdata(i,:,:)) ;
+ testmat = testmat + sparse(itestsample(:,1),itestsample(:,2),itestsample(:,3),nag,nvac);
+ testmatexp = testmatexp + sparse(itestsample(:,1),itestsample(:,2),itestsample(:,4),nag,nvac);
+ itestmat = itestmat + sparse(itestsample(:,1),itestsample(:,2),1,nag,nvac);
 end
+testmat=testmat./itestmat ; % average
+testmatexp=testmatexp./itestmat ; % average
+iok=~isnan(testmat); % valid inds
+
 assert(norm(allct2(:)-allct(:))<1e-7) % stop if they do not match
 % compute mean prediction :
-iggmoda=mean(alliggmod,1) ;
-
-% bar plot of model vs experiment :
-f=figure(2);
-set(f,'position', [100, 100, 1000, 300]) ; hold off ;
-%
-for i=1:numel(agtest)
-inds=i ;
-%%%%%%%%%%% plot
-b=bar(id(inds), iggmoda(inds), 'facecolor',0.99*[1 1 1], 'barwidth', 0.3) ; hold on ; set(b,'linewidth',2)
-b=bar(id(inds), iggexp1(inds), 'facecolor',cols(itestsample(i,2),:), 'barwidth',0.2) ; hold on ;
-errorbar(id(inds), iggexp1(inds), 0, iggexpe1(inds), 'k.' );
-set(gca, 'xtick',id);
-set(gca, 'xticklabel',[]);
-set(gca, 'tickdir','out');
-end
-xlim([-1,numel(agtest)]);
-%return
-%
-% correlation coefficient of average model
-cta=corr(iggmoda(:),iggexp1(:))
 if (qoct)
- csta=spearman(iggmoda(:),iggexp1(:))
+ cta=corr(testmat(iok(:)),testmatexp(iok(:)))
+ csta=spearman(testmat(iok(:)),testmatexp(iok(:)))
 else
- csta=corr(iggmoda(:),iggexp1(:), 'type', 'spearman')
+ [cta,pval]=corr(full(testmat(iok(:))),full(testmatexp(iok(:))))
+ [csta,spval]=corr(full(testmat(iok(:))),full(testmatexp(iok(:))), 'type', 'spearman')
 end
 %
 okinds=1:vind ; % vaccination indices ; take all
@@ -131,14 +126,25 @@ ylim([0 1])
 % average corr coef
 cptrave=mean(allca(okinds))
 cptrerr=std(allca(okinds))
-
+%
 cptave=mean(allcta(okinds))
 cpterr=std(allcta(okinds))
-
+% pvalues :
+minctp=min(allctpval)
+maxctp=max(allctpval)
+avectp=mean(allctpval)
+%
+% output for table in latex :
+ftex=fopen([fn,'.tex'],'w')
+%fprintf(ftex, 'model & $c_P^{train}$(m$\\pm$std) & $c_P^{test}$(m$\\pm$std) & $p^{test}_{val}$(min/max/avg) & c_P^{test,ave}(p_{val}) & c_S^{test,ave}(p_{val})\n') ;
+%fprintf(ftex, '%s & %3.2f$\\pm$%3.2f & %3.2f$\\pm$%3.2f & %2.1e/%2.1e/%2.1e', fn,cptrave,cptrerr,cptave,cpterr,minctp,maxctp,avectp);
+fprintf(ftex, 'model & $c_P^{train}$(m$\\pm$std) & $c_P^{test}$(m$\\pm$std) & $c_S^{train}$(m$\\pm$std) & $c_S^{test}$(m$\\pm$std) & $p^{test}_{val}$(min/max/avg)\\\\\n') ;
+fprintf(ftex, '%s & %3.2f$\\pm$%3.2f & %3.2f$\\pm$%3.2f & %2.1e/%2.1e/%2.1e',fn,cptrave,cptrerr,cptave,cpterr);
+%
 leg={['\it C_P^{train}=', num2str(cptrave,2), '+/-', num2str(cptrerr,2), '; \it C_P^{test}=', num2str(cptave,2), '+/-', num2str(cpterr,2), ';\it C_P^{test,ave}=',num2str(cta) ]};
 %legend(leg, 'location', 'northwest'); legend boxoff;
 legend(leg, 'location', 'southwest'); legend boxoff;
-
+%
 box on ;
 set(gcf, 'paperpositionmode','auto')
 %print(gcf, '-dpng', [model,'-cp.png']);
@@ -157,14 +163,18 @@ if (qcsp) % spearman
  xlim([0 1])
  ylim([0 1])
 % average model value :
-plot([0 1], [cta cta],['r--']) ;
-plot([0 1], [csta csta],['g--'])
+ plot([0 1], [cta cta],['r--']) ;
+ plot([0 1], [csta csta],['g--'])
 %
  cptrave=mean(allcsa(okinds))
  cptrerr=std(allcsa(okinds))
 %
  cptave=mean(allcsta(okinds))
  cpterr=std(allcsta(okinds))
+% pvalues :
+ mincstp=min(allcstpval)
+ maxcstp=max(allcstpval)
+ avecstp=mean(allcstpval)
 %
  leg=[leg {['\it C_S^{train}=', num2str(cptrave,2), '+/-', num2str(cptrerr,2), ';\it C_S^{test}=', num2str(cptave,2), '+/-', num2str(cpterr,2), ';\it C_S^{test,ave}=',num2str(csta)]}];
 % legend(leg, 'location', 'northwest'); legend boxoff;
@@ -173,13 +183,18 @@ plot([0 1], [csta csta],['g--'])
  if exist('lbl')
   text(-0.12,0.99,lbl,'fontsize',18);
  end
-
+%
  box on ;
  set(gca, 'fontsize',14)
  set(gcf, 'paperpositionmode','auto')
  print(gcf, '-dpng', [fn,'-cs.png']);
  print(gcf, '-depsc2', [fn,'-cs.eps']);
+% output for table in latex :
+% fprintf(ftex, '%3.2f$\\pm$%3.2f & %3.2f$\\pm$%3.2f & %3.2e/%3.2e/%3.2e\\\n', cptrave,cptrerr,cptave,cpterr,mincstp,maxcstp,avecstp);
+% output pvalue for pearson correlation, only, to save line space
+ fprintf(ftex, '& %3.2f$\\pm$%3.2f & %3.2f$\\pm$%3.2f & %2.1e/%2.1e/%2.1e & %3.2f(%2.1e) & %3.2f(%2.1e)   \\\\\n', cptrave,cptrerr,cptave,cpterr,minctp,maxctp,avectp,cta,pval,csta,spval);
 end
+fclose(ftex);
 
 %errorbar(alle2aa(okinds), alle2ata(okinds), alle2ae(okinds),'k.')
 %xlabel('E^{train}')

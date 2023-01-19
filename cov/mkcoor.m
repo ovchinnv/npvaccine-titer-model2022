@@ -15,7 +15,7 @@ else
  enc='at';
 end
 %
-%qmsa=1; % whether to recompute MSA
+if ~exist('qwritealn') ; qwritealn=0 ; end % whether to write alignment figures
 if ~exist('qmsa') ; qmsa=0 ; end
 % RBD sequence limits based on 6vxx
 sbeg='qptes';
@@ -111,7 +111,7 @@ for j=1:size(msamat,1)
  fprintf(fid,'%-29s %s\n', names{j}(1:min(29,length(names{j}))), msamat(j,:)) ; %left justify
 end
 fclose(fid);
-
+%
 % exclude missing residues :
 pmissing = 0.9;
 pmiss=mean((msamat=='-'),1);
@@ -121,3 +121,38 @@ msamat(:,imiss)=''; % delete those residue positions from alignment matrix
 
 % convert to coordinates
 coor=aln2coor(msamat,qgrantham);
+
+if (qwritealn)
+% write RBD alignment
+% note that the first strain in the MSA is the PDB vequence 6vxx ; we first remove it from the MSA below
+%
+msa=msa(2:end);
+alname='-cov-rbd';
+run strains;
+for i=1:numel(msa)
+ msa(i).Header=Virus{i} ;
+end
+multialignwrite(['msa',alname,'.clu'],msa, 'header', 'Multiple Sequence Alignment of Coronavirus RBDs');
+% also compute alignment score matrix
+ascores=zeros(numel(msa));
+for i=1:numel(msa)
+ for j=i:numel(msa)
+  [ascores(i,j),aln]=nwalign(strrep(msa(i).Sequence,'-',''), strrep(msa(j).Sequence,'-',''), 'GLOCAL', 0) ;
+ end
+ ascores(i,:)=ascores(i,:)/ascores(i,i)*100;
+end
+%pcolor(1-ascores) ; shading faceted ; colormap hot ;
+mycolor([1:size(ascores,1)],[1:size(ascores,2)], 1-ascores) ; shading flat ; colormap hot ; box on ;
+set(gca, 'xticklabel', Virus, 'yticklabel', Virus, 'tickdir','out', 'ticklength',[0,0],'xtick',[1:numel(msa)],'ytick',[1:numel(msa)],'XtickLabelRotation',90)
+% write in similarity numbers :
+for i=1:numel(msa)
+ for j=i:numel(msa)
+  sim=sprintf('%2.0f%',ascores(i,j));
+  text(j-0.44,i,['\bf',sim], 'color','w', 'fontsize',12)
+ end
+end
+set(gcf,'paperpositionmode','auto')
+print(gcf,'-depsc2',['msa',alname,'.eps']);
+print(gcf,'-dpng',['msa',alname,'.png']);
+
+end

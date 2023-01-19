@@ -2,4 +2,4 @@
 matlab="matlab -nodesktop -nosplash"
 # distance to average
 $matlab <<< "xint=1; xp=3; model='dist2ave' ; qgrantham=1 ; Diff=0.45 ; maxiter=4000 ; sdstep=0.015 ;  nptype='admix'; allagsplit ; show ; exit" >& mkfigS3c.out
-$matlab <<< "xint=1; xp=3; model='dist2ave' ; qgrantham=1 ; Diff=0.45 ; maxiter=4000 ; sdstep=0.015 ;  nptype='admix'; allvacsplit ; qvacsplit=1 ; lbl='\itE' show ; exit" >& mkfigS3c-rev.out
+$matlab <<< "xint=1; xp=3; model='dist2ave' ; qgrantham=1 ; Diff=0.45 ; maxiter=4000 ; sdstep=0.015 ;  nptype='admix'; allvacsplit ; qvacsplit=1 ; lbl='\itE'; show ; exit" >& mkfigS3c-rev.out

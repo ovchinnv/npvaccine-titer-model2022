@@ -1,6 +1,6 @@
 % make sure sqlite3.mex can be found:
 % download at https://github.com/rmartinjak/mex-sqlite3, Copyright (c) by 2014 Robin Martinjak
-addpath('../mex-sqlite3')
+addpath('../mex-sqlite3','../')
 %
 % make sure our custom flu_strains database can be found
 %
@@ -9,6 +9,7 @@ if ~exist('tab')
  tab='' ; % table in the strains database (90, 95, 97-99, or empty for full db)
 end
 %
+if ~exist('qwritealn') ; qwritealn=0 ; end % whether to write alignment figures
 %== align with a sequence to isolate stem & head  ==
 cmd='select sequence from flu_strains where strain_id = ''ACT22035.1'''; % this seq should be ID to CA/09
 ref=sqlite3(db,cmd);
@@ -127,4 +128,35 @@ end
 % align and save
 msa=multialign(seqs); % note that am not using any custom alignment params here
 save(['msa',alname,'.mat'],'msa') ;
-%
+
+% save in text format
+if (qwritealn)
+% set header to abbreviated names, for simplicity
+clear strains; run strains;
+for i=1:numel(msa)
+ msa(i).Header=Virus{i} ;
+end
+multialignwrite(['msa',alname,'.clu'],msa, 'header', 'Multiple Sequence Alignment of Influenza Hemagglutinin Ectodomains');
+% also compute alignment score matrix
+ascores=zeros(numel(seqs));
+for i=1:numel(seqs)
+ for j=i:numel(seqs)
+  [ascores(i,j),aln]=nwalign(seqs(i), seqs(j), 'GLOCAL', 0) ;
+ end
+ ascores(i,:)=ascores(i,:)/ascores(i,i)*100;
+end
+%pcolor(1-ascores) ; shading faceted ; colormap hot ;
+mycolor([1:size(ascores,1)],[1:size(ascores,2)], 1-ascores) ; shading flat ; colormap hot ;
+set(gca, 'xticklabel', Virus, 'yticklabel', Virus, 'tickdir','out', 'ticklength',[0,0],'xtick',[1:10])
+% write in similarity numbers :
+for i=1:numel(seqs)
+ for j=i:numel(seqs)
+  sim=sprintf('%2.0f%',ascores(i,j));
+  text(j-0.33,i,['\bf',sim], 'color','w', 'fontsize',12)
+ end
+end
+set(gcf,'paperpositionmode','auto')
+print(gcf,'-depsc2',['msa',alname,'.eps']);
+print(gcf,'-dpng',['msa',alname,'.png']);
+
+end

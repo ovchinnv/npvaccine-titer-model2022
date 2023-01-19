@@ -137,6 +137,13 @@ minctp=min(allctpval)
 maxctp=max(allctpval)
 avectp=mean(allctpval)
 
+% output for table in latex :
+ftex=fopen([fn,'.tex'],'w')
+%fprintf(ftex, 'model & $c_P^{train}$(m$\\pm$std) & $c_P^{test}$(m$\\pm$std) & $p^{test}_{val}$(min/max/avg) & c_P^{test,ave}(p_{val}) & c_S^{test,ave}(p_{val})\n') ;
+%fprintf(ftex, '%s & %3.2f$\\pm$%3.2f & %3.2f$\\pm$%3.2f & %2.1e/%2.1e/%2.1e', fn,cptrave,cptrerr,cptave,cpterr,minctp,maxctp,avectp);
+fprintf(ftex, 'model & $c_P^{train}$(m$\\pm$std) & $c_P^{test}$(m$\\pm$std) & $c_S^{train}$(m$\\pm$std) & $c_S^{test}$(m$\\pm$std) & $p^{test}_{val}$(min/max/avg)\\\\\n') ;
+fprintf(ftex, '%s & %3.2f$\\pm$%3.2f & %3.2f$\\pm$%3.2f & %2.1e/%2.1e/%2.1e',fn,cptrave,cptrerr,cptave,cpterr);
+%
 %l=sprintf('C_P^t %4.2f +/- %5.3f', cptrave, cptrerr')
 leg={['\it C_P^{train}=', num2str(cptrave,2), '+/-', num2str(cptrerr,2), '; \it C_P^{test}=', num2str(cptave,2), '+/-', num2str(cpterr,2), ';\it C_P^{test,ave}=',num2str(cta) ]};
 %legend(leg, 'location', 'northwest'); legend boxoff;
@@ -186,7 +193,12 @@ if (1) % spearman
  set(gcf, 'paperpositionmode','auto')
  print(gcf, '-dpng', [fn,'-cs.png']);
  print(gcf, '-depsc2', [fn,'-cs.eps']);
+% output for table in latex :
+% fprintf(ftex, '%3.2f$\\pm$%3.2f & %3.2f$\\pm$%3.2f & %3.2e/%3.2e/%3.2e\\\n', cptrave,cptrerr,cptave,cpterr,mincstp,maxcstp,avecstp);
+% output pvalue for pearson correlation, only, to save line space
+ fprintf(ftex, '& %3.2f$\\pm$%3.2f & %3.2f$\\pm$%3.2f & %2.1e/%2.1e/%2.1e & %3.2f(%2.1e) & %3.2f(%2.1e)   \\\\\n', cptrave,cptrerr,cptave,cpterr,minctp,maxctp,avectp,cta,pval,csta,spval);
 end
+fclose(ftex);
 
 %errorbar(alle2aa(okinds), alle2ata(okinds), alle2ae(okinds),'k.')
 %xlabel('E^{train}')

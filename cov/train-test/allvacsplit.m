@@ -25,6 +25,8 @@ end
 qwrand=0;
 wamp=0.1 ;
 %
+return
+%
 clear indvac indags vinds;
 %
 for i1=1:nallvacs
@@ -44,23 +46,31 @@ for i1=1:nallvacs
    alle2a=e2a ;
    allc=c ;
    allcs=cs ;
+   allcpval=pval ;% p-value associated w/correlation coefficient
+   allcspval=spval ;
   else
    allwgt1=[allwgt1;bestwgt] ; %append to the end
    alle2a=[alle2a;e2a];
    allc=[allc;c];
    allcs=[allcs;cs];
+   allcpval=[allcpval pval] ;% p-value associated w/correlation coefficient
+   allcspval=[allcspval spval] ;
   end
   run test; % test
   if (isamp==1)
    alle2at=e2a ;
    allct=c ;
    allcst=cs ;
+   allctpval=pval ;% p-value associated w/correlation coefficient
+   allcstpval=spval ;
   else
    alle2at=[alle2at;e2a];
    allct=[allct;c];
    allcst=[allcst;cs];
+   allctpval=[allctpval pval] ;% p-value associated w/correlation coefficient
+   allcstpval=[allcstpval spval] ;
   end
-
+  alltestdata(isamp,:,:) = itestsample ; % save test sample & results as well
  end % run model
 %
  end
