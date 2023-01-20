@@ -14,6 +14,9 @@ end
 if (~exist('enc'))
  enc='gr';
 end
+if (~exist('qplotwgt'))
+ qplotwgt=0;
+end
 %
 pdbfile=[pdbname,'.pdb']; %
 %
@@ -48,7 +51,7 @@ A=ismember(chainid,'A');
 typeCA=ismember(aname,'CA');
 %
 % prepare relevant sequence :
-seqinds =A(:) & typeCA(:) ;
+seqinds = find(A(:) & typeCA(:)) ;
 run ntaa ;
 pdbseq1 = cellfun ( aa1,rname(seqinds) ); % grab resname for seqinds & convert to 1-letter code
 pdbseq1 = pdbseq1(:)' ; % make sure a single row
@@ -108,3 +111,27 @@ bet(seqinds)=wscale*wgt3;
 mol.Model.Atom=pdb ;% new molecule without headers
 pdbout(mol, [wnam,'.pdb'], xpdb, ypdb, zpdb, occu, bet, find( A(:) & resid(:) >= 321 & resid(:) <= 592)) ;% hardwire rbd limits
 
+% plot weights :
+if (qplotwgt)
+if ~exist('leg') ; leg={} ; end
+%
+f=figure(1);
+set(f, 'position',[20,200,1200,200]*0.8);
+res=resid(seqinds); % matched to wgt3
+okinds=find(res>=321 & res<=592);
+plot(wgt3(okinds)) ; hold on ; grid on ;
+leg=[leg {wnam}];
+xlabel('\itResidue ID');
+ylabel('\it w_i');
+ylim([0 1]);
+% be careful to set x tick labels correctly :
+dres=10 ;
+ticks=dres:dres:numel(wgt3(okinds));
+set(gca,'xtick',ticks,'xticklabels',res(okinds(ticks)), 'fontsize',7.5,'ticklength',[0.01,.01]);
+legend(leg, 'location','northeast','interpreter','none') ; legend boxoff ; 
+text(-2.*dres,1,'B','fontsize',16)
+set(gcf,'paperpositionmode','auto')
+print(gcf,'-depsc2', [wnam,'-wgts.eps']);
+print(gcf,'-dpng', [wnam,'-wgts.png']);
+
+end

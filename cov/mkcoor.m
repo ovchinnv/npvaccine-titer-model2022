@@ -131,6 +131,7 @@ alname='-cov-rbd';
 run strains;
 for i=1:numel(msa)
  msa(i).Header=Virus{i} ;
+ msa(i).Sequence = msamat(i,:) ;
 end
 multialignwrite(['msa',alname,'.clu'],msa, 'header', 'Multiple Sequence Alignment of Coronavirus RBDs');
 % also compute alignment score matrix

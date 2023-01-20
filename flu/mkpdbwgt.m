@@ -17,6 +17,9 @@ end
 if (~exist('enc'))
  enc='gr';
 end
+if (~exist('qplotwgt'))
+ qplotwgt=0;
+end
 %
 pdbfile=[pdbname,'.pdb']; %
 %
@@ -72,7 +75,7 @@ if (qinst) % instantaneous
  d=load([wnam, '.mat']);
  wgt=d.wgt;
 else
-
+% need to specify weights file to read ...
  fits=load([wnam,'.mat']); % many fits to be averaged :
  wgt=mean(allwgt,1);
 end
@@ -119,3 +122,30 @@ bet(seqinds)=wscale*wgt3;
 %
 mol.Model.Atom=pdb ;% new molecule without headers
 pdbout(mol, [wnam,'.pdb'], xpdb, ypdb, zpdb, occu, bet)
+%
+% plot weights :
+if (qplotwgt)
+if ~exist('leg') ; leg={} ; end
+%
+f=figure(1);
+set(f, 'position',[20,200,1200,200]*0.8);
+plot(wgt3) ; hold on ; grid on ;
+if(~isempty(leg)) % do not add on first plot
+ i=find(diff(resid(seqinds))<0,1);
+ plot( [resid(seqinds(i)),resid(seqinds(i))], [0, max(wgt3) ],'k--', 'linewidth',1)
+end
+leg=[leg {wnam}];
+xlabel('\itResidue ID');
+ylabel('\it w_i');
+ylim([0 0.5]);
+% be careful to set x tick labels correctly :
+dres=15 ;
+ticks=dres:dres:numel(wgt3);
+set(gca,'xtick',ticks,'xticklabels',resid(seqinds(ticks)), 'fontsize',7.5,'ticklength',[0.01,.01]);
+legend(leg, 'location','northeast','interpreter','none') ; legend boxoff ; 
+text(-2.*dres,0.5,'A','fontsize',16)
+set(gcf,'paperpositionmode','auto')
+print(gcf,'-depsc2', [wnam,'-wgts.eps']);
+print(gcf,'-dpng', [wnam,'-wgts.png']);
+
+end
