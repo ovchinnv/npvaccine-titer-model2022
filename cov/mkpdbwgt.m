@@ -56,16 +56,10 @@ run ntaa ;
 pdbseq1 = cellfun ( aa1,rname(seqinds) ); % grab resname for seqinds & convert to 1-letter code
 pdbseq1 = pdbseq1(:)' ; % make sure a single row
 %
-
 % load weights :
-if (qinst) % instantaneous
- wnam=[model, '_', enc];
- d=load([wnam, '.mat']);
- wgt=d.wgt;
-else
- fits=load([wnam,'.mat']); % many fits to be averaged :
- wgt=mean(allwgt,1);
-end
+wnam=[model, '_', enc];
+d=load([wnam, '.mat']);
+wgt=d.wgt;
 %
 seq0=d.msamat(1,:) ;
 

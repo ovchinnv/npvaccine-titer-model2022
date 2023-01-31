@@ -140,8 +140,16 @@ for i=1:numel(msa)
  for j=i:numel(msa)
   [ascores(i,j),aln]=nwalign(strrep(msa(i).Sequence,'-',''), strrep(msa(j).Sequence,'-',''), 'GLOCAL', 0) ;
  end
- ascores(i,:)=ascores(i,:)/ascores(i,i)*100;
+% ascores(i,:)=ascores(i,:)/ascores(i,i)*100;
 end
+% normalize
+for i=1:numel(msa)
+ for j=i+1:numel(msa) % skip diag first
+  ascores(i,j)=ascores(i,j)/sqrt(ascores(i,i)*ascores(j,j))*100;
+ end
+ ascores(i,i)=100; % diag
+end
+
 %pcolor(1-ascores) ; shading faceted ; colormap hot ;
 mycolor([1:size(ascores,1)],[1:size(ascores,2)], 1-ascores) ; shading flat ; colormap hot ; box on ;
 set(gca, 'xticklabel', Virus, 'yticklabel', Virus, 'tickdir','out', 'ticklength',[0,0],'xtick',[1:numel(msa)],'ytick',[1:numel(msa)],'XtickLabelRotation',90)

@@ -28,7 +28,7 @@ involve sequence alignments will not work with Octave.
 ## How to Run
 
 The main code for the antibody titer model resides in the root directory
-of the repository. The files are:
+of the repository. The files to reproduce the results of the submitted paper are:
 
 
 File Name | Description
@@ -66,6 +66,8 @@ File Name | Description
 *flu/scan/show.m* | generate a 2D contour plot of parameter scan (Fig. 2A)
 *flu/scan/show1d.m* | generate a 1D contour plot of parameter scan (Fig. 2B)
 *flu/scan/mkscan* | executable bash script to generate in Fig. 2
+*flu/exp/cohen21flu-21.dat* | experimental IgG titers corresponding to the mosaic flu vaccines
+*flu/exp/cohen21flu-21ad.dat* | experimental IgG titers corresponding to the admix flu vaccines
 *cov/dist2ave.m* | distance-to-average strain model (#1) for the coronavirus (COV) RBD
 *cov/avedist.m* | average distance to strain model (#2) for the COV-RBD
 *cov/getind.m* | misc. function to return the array index corresponding to a COV strain abbreviation
@@ -86,6 +88,28 @@ File Name | Description
 *cov/train-test/mkfig6c* | executable bash script that calls Matlab to generate paper Fig. 6C
 *cov/6vxx.pdb* | a processed PDB file based on structure 6VXX for visualizing COV-RBD weights
 *cov/mkpdbwgt.m* | transfer residue weights to beta column of structure 6VXX for visualization, as in Fig. 5D.
+*cov/cohen21-14rbd.dat* | experimental IgG titers corresponding to the COV vaccines
+
+Additional files were added to facilitate the revision requested during paper review.
+
+File Name | Description
+----------|------------
+*mycolor.m* | a customized version of Matlab's pcolor that places labels at data centers (vs. corners)
+*seqwrite.m* | moved from *cov/seqwrite.m* above
+*mkflutab* | bash shell script to concatenate correlation data from flu models to make summary Table I
+*mkcovtab* | bash shell script to concatenate correlation data from COV models to make summary Table II
+*flu/msaheadstem.clu* | sequence alignment for flu strains used here in clustal format
+*flu/train-test/allvacs.m* | REMOVED
+*flu/train-test/allagsplit.m* | replaces *flu/train-test/allvacs.m* above
+*flu/train-test/allvacsplit.m* | additional train/test splits ; do not split titer sets, split along vaccines
+*flu/holdvac/allagsplit.m* | additional train/test splits ; split three-way, the third (`holdout') set corresponds to V8 titers
+*flu/holdvac/mkvac* | bash shell script to perform Matlab calculations for Fig.~S7
+*cov/msa-cov-rbd.clu* | sequence alignment for COV strains used here in clustal format
+*cov/train-test/allvacs.m* | REMOVED
+*cov/train-test/allagsplit.m* | replaces *cov/train-test/allvacs.m* above
+*cov/train-test/allvacsplit.m* | additional train/test splits ; do not split titer sets, split along vaccines
+*cov/holdvac/allagsplit.m* | additional train/test splits ; split three-way, the third (`holdout') set corresponds to V8 titers
+*cov/holdvac/mkvac* | bash shell script to perform Matlab calculations for Fig.~S8
 
 ## NOTES
 

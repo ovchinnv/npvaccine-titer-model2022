@@ -143,8 +143,16 @@ for i=1:numel(seqs)
  for j=i:numel(seqs)
   [ascores(i,j),aln]=nwalign(seqs(i), seqs(j), 'GLOCAL', 0) ;
  end
- ascores(i,:)=ascores(i,:)/ascores(i,i)*100;
+% ascores(i,:)=ascores(i,:)/ascores(i,i)*100;
 end
+% normalize
+for i=1:numel(seqs)
+ for j=i+1:numel(seqs) % skip diag first
+  ascores(i,j)=ascores(i,j)/sqrt(ascores(i,i)*ascores(j,j))*100;
+ end
+ ascores(i,i)=100; % diag
+end
+%
 %pcolor(1-ascores) ; shading faceted ; colormap hot ;
 mycolor([1:size(ascores,1)],[1:size(ascores,2)], 1-ascores) ; shading flat ; colormap hot ;
 set(gca, 'xticklabel', Virus, 'yticklabel', Virus, 'tickdir','out', 'ticklength',[0,0],'xtick',[1:10])

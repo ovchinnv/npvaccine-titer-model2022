@@ -1,0 +1,54 @@
+#!/bin/bash
+# concatenate correlation data from various models to make summary table
+# flu
+files=(
+ flu/train-test/dist2ave-gr-mosaic
+ flu/train-test/avedist-gr-mosaic
+ flu/train-test/dist2ave-at-mosaic
+ flu/train-test/dist2ave-gr-admix
+ flu/train-test/avedist-gr-admix
+)
+
+ftex="flutab.tex"
+q1st=1
+for ff in ${files[@]} ; do
+ f=${ff}-ags.tex
+ if [[ $q1st -eq 1 ]] ; then
+  head -n1 $f > $ftex
+  echo 'Train/test split by antigen \\
+  \hline \\' >> $ftex
+  q1st=0;
+ fi
+ tail -n1 $f | sed s/-ags// | sed s/gr/Gr/  | sed s/at/At/ | sed s/dist2ave/Model\ 1/ | sed s/avedist/Model\ 2/ >> $ftex
+done
+
+q1st=1;
+for ff in ${files[@]} ; do
+ f=${ff}-vac.tex
+ if [[ $q1st -eq 1 ]] ; then
+  echo 'Train/test split by vaccine \\
+  \hline \\' >> $ftex
+  q1st=0;
+ fi
+ tail -n1 $f | sed s/-vac// | sed s/gr/Gr/  | sed s/at/At/ | sed s/dist2ave/Model\ 1/ | sed s/avedist/Model\ 2/ >> $ftex
+done
+
+files=(
+ flu/holdvac/dist2ave-gr-mosaic
+ flu/holdvac/avedist-gr-mosaic
+ flu/holdvac/dist2ave-at-mosaic
+ flu/holdvac/dist2ave-gr-admix
+ flu/holdvac/avedist-gr-admix
+)
+
+q1st=1;
+for ff in ${files[@]} ; do
+ f=${ff}-ags-htest.tex
+ if [[ $q1st -eq 1 ]] ; then
+  echo 'Test on holdout set (V8) \\
+  \hline \\' >> $ftex
+  q1st=0;
+ fi
+ tail -n1 $f | sed s/-ags-htest// | sed s/gr/Gr/  | sed s/at/At/ | sed s/dist2ave/Model\ 1/ | sed s/avedist/Model\ 2/ >> $ftex
+done
+

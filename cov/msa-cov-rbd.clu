@@ -1,3 +1,4 @@
+\begin{verbatim}
 Multiple Sequence Alignment of Coronavirus RBDs
 
 
@@ -70,3 +71,4 @@ Yun11           LPFQQFGRDIADTTDAVRDPQTLEILDITPCSF 272
 BM4831          LPFQQFGRDISDTTDAVRDPQTLEILDITPCSF 272
 BtKY72          QPFQQFGRDVSDFTDSVRDPKTLEILDIAPCSY 268
                  .******* :* **:****:* .****:***:
+\end{verbatim}

@@ -1,3 +1,4 @@
+\begin{verbatim}
 Multiple Sequence Alignment of Influenza Hemagglutinin Ectodomains
 
 
@@ -120,3 +121,4 @@ HB09            IQGVKLTQG 524
 P10             IDGVKLSEN 520
 WA79            INPVKLSS- 529
                 *. * * . 
+\end{verbatim}

@@ -1,8 +1,6 @@
 #!/bin/bash
 matlab="matlab -nodesktop -nosplash"
 # model training/testing with a `holdout' vaccine set:
-# test on "validation" sample :
-#$matlab <<< "xint=1; xp=2; model='dist2ave' ; Diff=0.49 ; nptype='mosaic'; iholdvacs=4 ; qtestholdvac=0 ; allagsplit ; lbl='\itA'; showfit ; exit " >& mkvac1tr.out
 # test on "holdout" sample :
 $matlab <<< "xint=1; xp=2; model='dist2ave' ; Diff=0.49 ; nptype='mosaic'; iholdvacs=4 ; qtestholdvac=1 ; allagsplit ; lbl='\itA'; showfit ; exit " >& mkvac1.out
 #exit

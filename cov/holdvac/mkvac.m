@@ -1,1 +1,1 @@
-/home/taly/TeX/npvac/model-git/cov/train-test/mkvac.m
+../train-test/mkvac.m
