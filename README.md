@@ -6,6 +6,9 @@ shown in the figures of the paper **Phenomenological modeling of antibody
 response from vaccine strain composition**, 2022 by *V. Ovchinnikov and
 M. Karplus* (submitted).
 
+January 15, 2025 update : A significantly revised version of the paper
+has been accepted for publication in the journal MDPI Antibodies.
+
 ## Code Summary
 
 The modeling of antibody titers performed here is implemented as a
@@ -33,7 +36,7 @@ of the repository. The files to reproduce the results of the submitted paper are
 
 File Name | Description
 ----------|------------
-*aln2coor.m | transform a multiple sequence alignment (MSA) to a matrix with numerical values using the Grantham, 1974 encoding or the Atchley 2005 encoding
+*aln2coor.m* | transform a multiple sequence alignment (MSA) to a matrix with numerical values using the Grantham, 1974 encoding or the Atchley 2005 encoding
 *ntaa.m* | functions to convert between 1- and 3-letter aa and nt code representations
 *pdbout.m* | helper function to write a subset of coordinates, occupancy and temperature factors to a file in PDB format
 *flu/dist2ave.m* | distance-to-average strain model (#1) for the flu hemagglutinin (HA)
